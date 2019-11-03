@@ -1,0 +1,26 @@
+{
+  "name": "pwa",
+  "version": "1.0.0",
+  "description": "pwa course tutarial",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "gh-pages -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahmad-666/pwa-course.git"
+  },
+  "keywords": [
+    "pwa"
+  ],
+  "author": "ahmad",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ahmad-666/pwa-course/issues"
+  },
+  "homepage": "https://ahmad-666.github.io/pwa-course",
+  "dependencies": {
+    "gh-pages": "^2.1.1"
+  }
+}
