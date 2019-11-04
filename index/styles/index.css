@@ -1,0 +1,10 @@
+p {
+  color: red;
+}
+
+.img {
+  width: 500px;
+  height: 500px;
+  background-image: url("/src/assets/imgs/img2.jpg");
+}
+/*# sourceMappingURL=index.css.map */

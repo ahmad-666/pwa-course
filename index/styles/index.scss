@@ -1,0 +1,8 @@
+// @import '/src/colors.scss' ;
+// @import '/src/mixins.scss' ;
+@import '../../about/styles/about.scss' ;
+.img{
+    width: 500px;
+    height: 500px;
+    background-image: url('/src/assets/imgs/img2.jpg');
+}
