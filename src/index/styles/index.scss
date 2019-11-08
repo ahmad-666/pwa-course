@@ -1,8 +1,33 @@
-// @import '/src/colors.scss' ;
-// @import '/src/mixins.scss' ;
-@import '../../about/styles/about.scss' ;
-.img{
-    width: 500px;
-    height: 500px;
-    background-image: url('/src/assets/imgs/img2.jpg');
+@import '../../variables.scss' ;
+@import '../../colors.scss' ;
+@import '../../mixins.scss' ;
+body{
+    display: flex;
+    @include flex(column,flex-start,center,nowrap,"");
+}
+button{
+    margin-top: $dist1;
+    @include swapColor($textWhite,$primaryColor) ; 
+}
+a[href="./about.html"]{
+    font-size: $fontM;
+    color: $darkBlue;
+    font-weight: 700;
+    margin-top: $dist1;
+}
+.card{
+    width: auto;
+    height: auto;
+    display: flex;
+    @include flex(column,flex-start,center,nowrap,"") ;
+    margin-top: $dist1;
+    img{
+        width: 200px;
+        height: 200px;
+    }
+    p{
+        font-size: $fontM;
+        color: $textDark;
+        margin-top: $dist1;
+    }
 }
