@@ -9,7 +9,19 @@ function showPrompt(evt) {
       else console.log('user add our app to home screen');
     })
 }
-document.querySelector('#createCard').addEventListener('click', fetchCard);
+//document.querySelector('#createCard').addEventListener('click', fetchCard);
+document.querySelector('#createCard').addEventListener('click',unregisterServiceWorkers);
+function unregisterServiceWorkers(){
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations()
+    .then(sws=>{
+      sws.forEach(sw=>{
+        sw.unregister() ;
+      })
+    })
+    .catch(msg=>console.error(msg)) ;
+  }
+}
 //cache-then-network
 function fetchCard(e) {
   let imgUrl = '/src/assets/imgs/img2.jpg';
@@ -18,27 +30,21 @@ function fetchCard(e) {
     method: 'GET',
     mode: 'cors'
   }
-  fetch(txtUrl,fetchConfig) //when we have net 
+  fetch(txtUrl,fetchConfig) 
   .then(res => res.json())
   .then(data => {
     networkDataFetched = true ;
     clearCards() ;
     createCard(imgUrl,data[0].name);
-    //we should call createCard() two times one for fetch and one for cache
-    //because we want to update UI totally(get new data)
   })
   .catch(msg => console.error(msg))
-  //fetch and reading from cache are both async so there is no difference 
-  //that first we use fetch then read from cache or reverse.
-  if('caches' in window){ //it should be totally separate from 'fetch'
+  if('caches' in window){ 
     caches.match(txtUrl)
-    //if we dont have 'txtUrl' we still execute .then here 
     .then(cacheResp=>{
       if(cacheResp) return cacheResp.json() ;  
     })
     .then(data=>{
       if(!networkDataFetched) {
-        //because its async code we need to place this 'if' exactly here and if we place in inside top 'then' can cause some problems
         clearCards() ;
         createCard(imgUrl,data[0].name);
       }
