@@ -15,6 +15,10 @@ a[href="./about.html"]{
     font-weight: 700;
     margin-top: $dist1;
 }
+.cards{
+    display: flex;
+    @include flex(column,flex-start,center,nowrap,"");
+}
 .card{
     width: auto;
     height: auto;
