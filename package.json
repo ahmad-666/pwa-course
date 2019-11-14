@@ -21,6 +21,7 @@
   },
   "homepage": "https://ahmad-666.github.io/pwa-course",
   "dependencies": {
-    "gh-pages": "^2.1.1"
+    "gh-pages": "^2.1.1",
+    "idb": "^4.0.5"
   }
 }

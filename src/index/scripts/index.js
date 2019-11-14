@@ -10,18 +10,7 @@ function showPrompt(evt) {
     })
 }
 //document.querySelector('#createCard').addEventListener('click', fetchCard);
-document.querySelector('#createCard').addEventListener('click',unregisterServiceWorkers);
-function unregisterServiceWorkers(){
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.getRegistrations()
-    .then(sws=>{
-      sws.forEach(sw=>{
-        sw.unregister() ;
-      })
-    })
-    .catch(msg=>console.error(msg)) ;
-  }
-}
+document.querySelector('#createCard').addEventListener('click',fetchCard);
 //cache-then-network
 function fetchCard(e) {
   let imgUrl = '/src/assets/imgs/img2.jpg';
@@ -32,30 +21,25 @@ function fetchCard(e) {
   }
   fetch(txtUrl,fetchConfig) 
   .then(res => res.json())
-  .then(data => {
+  .then(dataArray => {
     networkDataFetched = true ;
     clearCards() ;
-    createCard(imgUrl,data[0].name);
+    dataArray.forEach(data=>createCard(imgUrl,data.name)) ;
   })
   .catch(msg => console.error(msg))
-  if('caches' in window){ 
-    caches.match(txtUrl)
-    .then(cacheResp=>{
-      if(cacheResp) return cacheResp.json() ;  
-    })
-    .then(data=>{
-      if(!networkDataFetched) {
+  if('indexedDB' in window){ 
+    indexDbReadAll('users')
+    .then(dataArray=>{
+      if(!networkDataFetched){
         clearCards() ;
-        createCard(imgUrl,data[0].name);
+        dataArray.forEach(data=>createCard(imgUrl,data.name)) ;
       }
     })
-    .catch(()=>{;})
+    .catch(msg=>console.error(msg)) 
   }
 }
 function clearCards(){
-  while(cardsWrapper.hasChildNodes()){
-    cardsWrapper.removeChild(cardsWrapper.lastChild) ;
-  }
+  while(cardsWrapper.hasChildNodes()) cardsWrapper.removeChild(cardsWrapper.lastChild) ;
 }
 function createCard(imgSrc, text) {
   let card = document.createElement('div');

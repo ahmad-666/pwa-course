@@ -1,3 +1,5 @@
+importScripts('./utilities/idb.js') ;
+importScripts('./utilities/idbUtilities.js') ;
 let STATIC_CACHE = 'static-v17' ;
 let DYNAMIC_CACHE = 'dynamic-v17' ;
 let offlineFallback = '/src/404.html' ;
@@ -9,6 +11,8 @@ let staticCachingAssets = [
     '/src/',
     '/src/index.html',
     offlineFallback ,
+    '/src/utilities/idb.js',
+    '/src/utilities/idbUtilities.js',
     '/src/libraries/fontawesome/all.min.css',
     '/src/framework.css',
     '/src/init.css', 
@@ -18,6 +22,8 @@ let staticCachingAssets = [
     '/src/assets/imgs/img1.jpg',
     '/src/assets/fonts/iransans.ttf'
 ] ;
+
+
 function trimCache(cacheName,maxItems){
     caches.open(cacheName)
     .then(cache=>{
@@ -108,15 +114,21 @@ self.addEventListener('fetch',function(evt){
         //we access dynamic data from both cache/net via vanilla .js files
         case 'cache-then-network' :
             evt.respondWith(
-                caches.open(DYNAMIC_CACHE)
-                .then(cache=>{
-                    return fetch(evt.request)
-                    .then(fetchRes=>{
-                        trimCache(DYNAMIC_CACHE,dynamicCacheMaxItems) ;
-                        cache.put(evt.request.url,fetchRes.clone()) ;
-                        return fetchRes ;
+                fetch(evt.request)
+                .then(fetchRes=>{
+                    let cloneRes = fetchRes.clone() ;
+                    cloneRes.json() //if we use 'return' here we never reach that 
+                    //line that we return 'fetchRes'
+                    .then(dataArray=>{
+                        return indexDbClear('users')
+                        .then(()=>dataArray.forEach(data=>{
+                            indexDbWrite('users',data)
+                            //with bellow code we delete any entry that we just add 
+                            //.then(()=>indexDbDelete('users',data.id))
+                        }))
                     })
                     .catch(msg=>console.error(msg)) ;
+                    return fetchRes ;
                 })
                 .catch(msg=>console.error(msg)) 
             ) ;      
