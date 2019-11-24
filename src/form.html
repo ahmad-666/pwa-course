@@ -25,20 +25,15 @@
 	<meta name="theme-color" content="#3f51b5">
 </head>
 <body>
-    <a href="./about.html">about</a>
-    <a href="./form.html">form</a>
-    <button class="btn small" id="showPrompt">show prmpt</button>
-    <button class="btn small" id="createCard">create card</button>
-    <div class="cards">
-        <div class="card">
-            <i class="fas fa-times"></i>
-            <img src="../src/assets/imgs/img1.jpg" alt="cardAlt">
-            <p>text for img1</p>
-        </div>
-    </div>
+    <a href="./index.html">index</a>
+    <form novalidate name="myForm" id="myForm" method="GET" action="#!" enctype="text/plain">
+        <input type="text" id="name" name="name" placeholder="enter name">
+        <input type="email" id="email" name="email" placeholder="enter email">
+        <button type="submit">submit</button>
+    </form>
     <script src="./utilities/idb.js"></script>
     <script src="./utilities/idbUtilities.js"></script>
     <script src="./swReg.js"></script>
-    <script src="./index/scripts/index.js"></script>
+    <script src="./form/scripts/form.js"></script>
 </body>
 </html>

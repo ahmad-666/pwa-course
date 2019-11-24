@@ -9,7 +9,7 @@ button{
     margin-top: $dist1;
     @include swapColor($textWhite,$primaryColor) ; 
 }
-a[href="./about.html"]{
+a{
     font-size: $fontM;
     color: $darkBlue;
     font-weight: 700;

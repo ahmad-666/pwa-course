@@ -1,5 +1,6 @@
 let indexDB = idb.open('db',1,db=>{
     if(!db.objectStoreNames.contains('users')) db.createObjectStore('users',{keyPath:'id'}) ;
+    if(!db.objectStoreNames.contains('sync-userTable')) db.createObjectStore('sync-userTable',{keyPath:'id'}) ; //for bg-sync
 }) ;
 function indexDbWrite(table,data){
     return indexDB

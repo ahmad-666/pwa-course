@@ -1,15 +1,18 @@
 importScripts('./utilities/idb.js') ;
 importScripts('./utilities/idbUtilities.js') ;
-let STATIC_CACHE = 'static-v17' ;
-let DYNAMIC_CACHE = 'dynamic-v17' ;
+let STATIC_CACHE = 'static-v20' ;
+let DYNAMIC_CACHE = 'dynamic-v18' ;
 let offlineFallback = '/src/404.html' ;
 let dynamicCacheMaxItems = 5 ;
+let syncUserTable = 'sync-userTable' ;
+let syncUserTag = 'sync-userData'
 let cacheThenNetworkURLs = [ //urls that contains dynamic data
     'https://jsonplaceholder.typicode.com/users'
 ] 
 let staticCachingAssets = [
     '/src/',
     '/src/index.html',
+    '/src/form.html',
     offlineFallback ,
     '/src/utilities/idb.js',
     '/src/utilities/idbUtilities.js',
@@ -18,12 +21,11 @@ let staticCachingAssets = [
     '/src/init.css', 
     '/src/index/styles/index.css',
     '/src/index/scripts/index.js',
+    '/src/form/scripts/form.js',
     '/src/assets/icons/icon-144x144.png',
     '/src/assets/imgs/img1.jpg',
     '/src/assets/fonts/iransans.ttf'
 ] ;
-
-
 function trimCache(cacheName,maxItems){
     caches.open(cacheName)
     .then(cache=>{
@@ -127,6 +129,48 @@ self.addEventListener('fetch',function(evt){
             console.error(`there is no corresponding approach for ${evt.request.url}`) ;
     }
 })
+self.addEventListener('sync',e=>{//when we use bg-sync and have/get connection
+    switch(e.tag){
+        case syncUserTag:
+            e.waitUntil(
+                indexDbReadAll(syncUserTable)
+                .then(dataArray=>{
+                    dataArray.forEach(data=>{
+                        //for each row inside indexDB's table related to current sync
+                        //we need to send that data from indexDB to server when we have net 
+                        fetch('https://jsonplaceholder.typicode.com/users',{
+                            method: 'post',
+                            header:{
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                id: data.id,
+                                name: data.name ,
+                                imgSrc: data.imgSrc
+                            })
+                        })
+                        .then(res=>{
+                            if(res.ok){
+                                console.log(`${data.id} gets deleted from indexDB`)
+                                indexDbDelete(syncUserTable,data.id) ;
+                                //above line in incorrect because we always get latest 'id' not target id 
+                                //because forEach is sync but we remove from indexDB inside async block
+                                //we should read 'id' directly from server 
+                                //we should not call clearCards() or createCards(imgSrc,text) inside sw
+                                //because we don't have access to DOM here 
+                            }
+                        })
+                        .catch(msg=>console.error(msg)) ;
+                    })
+                })  
+                .catch(msg=>console.error(msg)) 
+            );
+            break ;
+        default :
+            console.error('we dont have corresponding tag related to current "sync" event') ;
+    }
+});
 
 
 
