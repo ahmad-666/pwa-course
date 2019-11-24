@@ -64,8 +64,7 @@ self.addEventListener('activate',function(evt){
 });
 //combine multiple strategies
 self.addEventListener('fetch',function(evt){
-    let approach = 'cache-with-network-fallback' ; //default approach
-    //can be:cache-only,network-only,cache-with-network-fallback,network-with-cache-fallback,cache-then-network
+    let approach = 'cache-with-network-fallback' ; 
     for(let i=0;i<cacheThenNetworkURLs.length;i++){
         let url = cacheThenNetworkURLs[i] ;
         if(url==evt.request.url){
@@ -74,10 +73,6 @@ self.addEventListener('fetch',function(evt){
         }
     }
     switch(approach){
-        //if find in cache return response
-        //if not then check network and if have net access 
-        //save req.url inside cache and return response and if 
-        //not have net access return response of 404 page
         case 'cache-with-network-fallback' :
             evt.respondWith(
                 caches.match(evt.request)
@@ -110,21 +105,16 @@ self.addEventListener('fetch',function(evt){
                 })
             )              
             break ;
-        //always store latest response(updated data) in cache
-        //we access dynamic data from both cache/net via vanilla .js files
         case 'cache-then-network' :
             evt.respondWith(
                 fetch(evt.request)
                 .then(fetchRes=>{
                     let cloneRes = fetchRes.clone() ;
-                    cloneRes.json() //if we use 'return' here we never reach that 
-                    //line that we return 'fetchRes'
+                    cloneRes.json()
                     .then(dataArray=>{
                         return indexDbClear('users')
                         .then(()=>dataArray.forEach(data=>{
                             indexDbWrite('users',data)
-                            //with bellow code we delete any entry that we just add 
-                            //.then(()=>indexDbDelete('users',data.id))
                         }))
                     })
                     .catch(msg=>console.error(msg)) ;
