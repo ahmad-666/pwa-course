@@ -1,6 +1,6 @@
 importScripts('./utilities/idb.js') ;
 importScripts('./utilities/idbUtilities.js') ;
-let STATIC_CACHE = 'static-v20' ;
+let STATIC_CACHE = 'static-v23' ;
 let DYNAMIC_CACHE = 'dynamic-v18' ;
 let offlineFallback = '/src/404.html' ;
 let dynamicCacheMaxItems = 5 ;
@@ -64,7 +64,6 @@ self.addEventListener('activate',function(evt){
     )
     return self.clients.claim() ; 
 });
-//combine multiple strategies
 self.addEventListener('fetch',function(evt){
     let approach = 'cache-with-network-fallback' ; 
     for(let i=0;i<cacheThenNetworkURLs.length;i++){
@@ -129,7 +128,7 @@ self.addEventListener('fetch',function(evt){
             console.error(`there is no corresponding approach for ${evt.request.url}`) ;
     }
 })
-self.addEventListener('sync',e=>{//when we use bg-sync and have/get connection
+self.addEventListener('sync',e=>{
     switch(e.tag){
         case syncUserTag:
             e.waitUntil(
@@ -171,6 +170,45 @@ self.addEventListener('sync',e=>{//when we use bg-sync and have/get connection
             console.error('we dont have corresponding tag related to current "sync" event') ;
     }
 });
-
-
+self.addEventListener('notificationclick',e=>{
+    let notification = e.notification ;
+    switch(e.action){ 
+        case 'confirm':
+            e.waitUntil(
+                clients.matchAll()
+                .then(clis=>{
+                    let client = clis.find(c=>c.visibilityState=='visible')
+                    if(client){
+                        client.navigate('http://127.0.0.1:3500/src/form.html') ;
+                        client.focus() ;
+                    } 
+                    else client.openWindow('http://127.0.0.1:3500/src/about.html') ;
+                })
+            )     
+            notification.close() ;
+            break ;
+        case 'cancel':
+            console.log('click on cancel',notification) ;
+            notification.close() ;
+            break ;
+        default :
+            console.error('action is not handled inside notificationclick event')
+    }
+})
+self.addEventListener('notificationclose',e=>{
+    console.log(`user close the ${e.notification}`)
+})
+self.addEventListener('push',e=>{
+    let data = null ;
+    if(e.data) data = JSON.parse(e.data.text()) ; //second arg of webpush.sendNotification 
+    let notificationConfig = {
+        body: data.content ,
+        icon: '/src/assets/icons/icon-96x96.png'
+    };
+    e.waitUntil(
+        //self is sw itself ... we cant show notification just with this
+        //self.registration is part of sw that is connected to browser 
+        self.registration.showNotification(data.title,notificationConfig) 
+    )
+})
 
