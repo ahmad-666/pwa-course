@@ -5,7 +5,7 @@ let DYNAMIC_CACHE = 'dynamic-v18' ;
 let offlineFallback = '/src/404.html' ;
 let dynamicCacheMaxItems = 5 ;
 let syncUserTable = 'sync-userTable' ;
-let syncUserTag = 'sync-userData'
+let syncUserTag = 'sync-userData' ;
 let cacheThenNetworkURLs = [ //urls that contains dynamic data
     'https://jsonplaceholder.typicode.com/users'
 ] 
@@ -24,7 +24,7 @@ let staticCachingAssets = [
     '/src/form/scripts/form.js',
     '/src/assets/icons/icon-144x144.png',
     '/src/assets/imgs/img1.jpg',
-    '/src/assets/fonts/iransans.ttf'
+    //'/src/assets/fonts/iransans.ttf'
 ] ;
 function trimCache(cacheName,maxItems){
     caches.open(cacheName)
@@ -135,8 +135,6 @@ self.addEventListener('sync',e=>{
                 indexDbReadAll(syncUserTable)
                 .then(dataArray=>{
                     dataArray.forEach(data=>{
-                        //for each row inside indexDB's table related to current sync
-                        //we need to send that data from indexDB to server when we have net 
                         fetch('https://jsonplaceholder.typicode.com/users',{
                             method: 'post',
                             header:{
@@ -153,11 +151,6 @@ self.addEventListener('sync',e=>{
                             if(res.ok){
                                 console.log(`${data.id} gets deleted from indexDB`)
                                 indexDbDelete(syncUserTable,data.id) ;
-                                //above line in incorrect because we always get latest 'id' not target id 
-                                //because forEach is sync but we remove from indexDB inside async block
-                                //we should read 'id' directly from server 
-                                //we should not call clearCards() or createCards(imgSrc,text) inside sw
-                                //because we don't have access to DOM here 
                             }
                         })
                         .catch(msg=>console.error(msg)) ;
@@ -200,14 +193,12 @@ self.addEventListener('notificationclose',e=>{
 })
 self.addEventListener('push',e=>{
     let data = null ;
-    if(e.data) data = JSON.parse(e.data.text()) ; //second arg of webpush.sendNotification 
+    if(e.data) data = JSON.parse(e.data.text()) ; 
     let notificationConfig = {
         body: data.content ,
         icon: '/src/assets/icons/icon-96x96.png'
     };
     e.waitUntil(
-        //self is sw itself ... we cant show notification just with this
-        //self.registration is part of sw that is connected to browser 
         self.registration.showNotification(data.title,notificationConfig) 
     )
 })

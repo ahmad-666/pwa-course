@@ -1,6 +1,6 @@
 let promptEvent = null ;
 if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js')
+    navigator.serviceWorker.register('./sw(workbox).js')
     .then(function(sw){
     })
     .catch(function(msg){

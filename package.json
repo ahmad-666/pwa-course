@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "gh-pages -d dist",
-    "vapid": "web-push generate-vapid-keys"
+    "vapid": "web-push generate-vapid-keys",
+    "workboxInit": "workbox wizard --injectManifest" ,
+    "workbox": "workbox injectManifest workbox-config.js"
   },
   "repository": {
     "type": "git",
@@ -25,5 +27,8 @@
     "gh-pages": "^2.1.1",
     "idb": "^4.0.5",
     "web-push": "^3.4.1"
+  },
+  "devDependencies": {
+    "workbox-cli": "^4.3.1"
   }
 }
